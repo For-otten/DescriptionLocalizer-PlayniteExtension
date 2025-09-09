@@ -612,9 +612,6 @@ namespace AutoDescriptionLocalizer
                 string detectedLanguage = result.detectedLanguage?.language;
                 string translatedText = result.translatedText;
 
-                logger.Info($"[API_DEBUG] ENVIADO: \"{text.Replace("\n", " ").Trim()}\"");
-                logger.Info($"[API_DEBUG] RECEBIDO: \"{translatedText.Replace("\n", " ").Trim()}\"");
-
                 if (!string.IsNullOrEmpty(detectedLanguage))
                 {
                     var normalizedDetected = detectedLanguage.Split('-')[0];
