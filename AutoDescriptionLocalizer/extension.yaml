@@ -1,0 +1,9 @@
+﻿Id: FD25D279-1A13-4028-8438-E468110B28A6
+Name: Auto Description Localizer
+Author: Adriano Vicentini Junior
+Version: 0.1.0
+Module: AutoDescriptionLocalizer.dll
+Type: GenericPlugin
+Links:
+  - Name: GitHub
+    Url: https://github.com/Mysterken/DLsiteMetadata

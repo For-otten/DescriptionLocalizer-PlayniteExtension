@@ -1,0 +1,67 @@
+{
+  "Fallbacks": {
+    "shooter": "jogo de tiro",
+    "game-changing": "grande impacto",
+    "mechanic": "mecânicas",
+    "sequel": "sequência",
+    "video game": "videogame",
+    "burn rubber": "cante pneu"
+
+  },
+  "Overrides": [
+    {
+      "Pattern": "game-changing ability|game-changing abilities",
+      "Translation": "habilidade decisiva|habilidades decisivas",
+      "Priority": 20,
+      "Note": "Tradução contextualizada para habilidades game-changing"
+    },
+    {
+      "Pattern": "game-changing mechanic|game-changing mechanics",
+      "Translation": "mecânica revolucionária|mecânicas revolucionárias",
+      "Priority": 20,
+      "Note": "Tradução contextualizada para mecânicas game-changing"
+    },
+    {
+      "Pattern": "game-changing experience|game-changing experiences",
+      "Translation": "experiência revolucionária|experiências revolucionárias",
+      "Priority": 20,
+      "Note": "Tradução contextualizada para experiências game-changing"
+    },
+    {
+      "Pattern": "first-person shooter",
+      "Translation": "jogo de tiro em primeira pessoa (FPS)",
+      "Priority": 18,
+      "Note": "FPS técnico"
+    },
+    {
+      "Pattern": "free-to-play shooter",
+      "Translation": "jogo de tiro gratuito",
+      "Priority": 18,
+      "Note": "FPS técnico"
+    },
+    {
+      "Pattern": "third-person shooter",
+      "Translation": "jogo de tiro em terceira pessoa (TPS)",
+      "Priority": 18,
+      "Note": "TPS técnico"
+    },
+    {
+      "Pattern": "team-based shooter",
+      "Translation": "jogo de tiro baseado em equipe",
+      "Priority": 18,
+      "Note": "Para jogos como Overwatch 2"
+    },
+    {
+      "Pattern": "hero shooter",
+      "Translation": "hero shooter",
+      "Priority": 17,
+      "Note": "Mantido em inglês, termo conhecido no mercado brasileiro"
+    },
+    {
+      "Pattern": "video game|video games",
+      "Translation": "videogame|videogames",
+      "Priority": 17,
+      "Note": "Mantido em inglês, termo conhecido no mercado brasileiro"
+    }
+  ]
+}

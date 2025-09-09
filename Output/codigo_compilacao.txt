@@ -1,0 +1,2 @@
+cd C:\Users\Júnior\AppData\Local\Playnite
+Toolbox.exe pack C:\Users\Júnior\source\repos\AutoDescriptionLocalizer\AutoDescriptionLocalizer\bin\Release C:\Users\Júnior\source\repos\AutoDescriptionLocalizer\Output

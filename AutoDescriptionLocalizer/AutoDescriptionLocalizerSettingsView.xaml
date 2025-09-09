@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="AutoDescriptionLocalizer.AutoDescriptionLocalizerSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Margin="20">
+        <TextBlock Text="{Binding WindowTitle}" FontWeight="Bold" Margin="0,0,0,10" />
+
+        <Label Content="{Binding TargetLanguageLabel}" />
+        <ComboBox ItemsSource="{Binding AvailableLanguages}"
+                  SelectedValue="{Binding Settings.TargetLanguage, Mode=TwoWay}"
+                  SelectedValuePath="Value"
+                  DisplayMemberPath="DisplayName"
+                  Margin="0,0,0,5" />
+        <TextBlock TextWrapping="Wrap" Margin="0,0,0,20"
+                   Text="{Binding TargetLanguageHelp}"/>
+
+        <CheckBox IsChecked="{Binding Settings.AskBeforeOverwrite, Mode=TwoWay}"
+                  Content="{Binding AskBeforeOverwriteLabel}"/>
+    </StackPanel>
+</UserControl>
