@@ -39,7 +39,7 @@ Download the latest release from GitHub:
 &ensp; _Baixe a versão mais recente no GitHub:_  
 [Latest Release](https://github.com/For-otten/DescriptionLocalizer-PlayniteExtension/releases/latest)
 
-Or directly from the [Playnite website](https://playnite.link/addons.html).  
+Or directly from the [Playnite website](https://playnite.link/addons.html#FD25D279-1A13-4028-8438-E468110B28A6).  
  &ensp;_Ou diretamente do site do Playnite._
 
 ---
