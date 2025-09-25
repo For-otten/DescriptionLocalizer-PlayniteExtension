@@ -1,5 +1,14 @@
 AddonId: 'FD25D279-1A13-4028-8438-E468110B28A6'
 Packages:
+  - Version: 1.1.0
+    RequiredApiVersion: 6.12.0
+    ReleaseDate: 2025-09-25
+    PackageUrl: https://github.com/For-otten/DescriptionLocalizer-PlayniteExtension/releases/download/v1.1/FD25D279-1A13-4028-8438-E468110B28A6_1_1_0.pext
+    Changelog:
+      - Added a local caching system to instantly load translations for games that have already been translated.
+      - Improved core logic to better detect changes in game descriptions and avoid unnecessary API calls.
+      - Added a new alert message for translations that take longer than expected.
+      - Fixed general stability and various bugs.
   - Version: 1.0.0
     RequiredApiVersion: 6.12.0
     ReleaseDate: 2025-09-09
