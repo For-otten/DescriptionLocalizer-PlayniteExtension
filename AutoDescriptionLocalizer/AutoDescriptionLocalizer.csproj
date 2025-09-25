@@ -66,6 +66,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TranslationCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exceptions-pre-translation-rules.json">
