@@ -15,5 +15,19 @@
 
         <CheckBox IsChecked="{Binding Settings.AskBeforeOverwrite, Mode=TwoWay}"
                   Content="{Binding AskBeforeOverwriteLabel}"/>
+
+        <Separator Margin="0,20,0,10" />
+
+        <TextBlock Text="{Binding ClearCacheButtonLabel}"
+                   Style="{DynamicResource BaseTextBlockStyle}"
+                   Margin="0,5,0,5"
+                   FontWeight="Bold" />
+
+        <Button Content="{Binding ClearCacheButtonLabel}"
+                Command="{Binding ClearCacheCommand}"
+                Margin="0,5,0,0"
+                HorizontalAlignment="Left"
+                Width="250"
+                ToolTipService.ToolTip="{Binding ClearCacheConfirmationMessage}" />
     </StackPanel>
 </UserControl>

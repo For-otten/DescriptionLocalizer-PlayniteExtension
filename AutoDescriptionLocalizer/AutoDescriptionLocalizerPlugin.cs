@@ -147,7 +147,7 @@ namespace AutoDescriptionLocalizer
                 if (!string.IsNullOrEmpty(originalTerm) && !string.IsNullOrEmpty(placeholder))
                 {
                     protectedTerms[placeholder] = originalTerm;
-                    sb.Append(placeholder);
+                    sb.Append($" {placeholder} ");
                     placeholderCounter++;
                 }
 
@@ -343,10 +343,97 @@ namespace AutoDescriptionLocalizer
             if (unionCount == 0) return 0.0;
             return intersectionCount / unionCount;
         }
+        private (string preparedText, Func<string, string> restoreFunction) PrepareAndRestoreHtmlForTranslation(string htmlDescription)
+        {
+            var protectionRegex = new Regex("(<[^>]+>)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+            var protectedTerms = new Dictionary<string, string>();
+            var sb = new StringBuilder();
+            int lastIndex = 0;
+            int placeholderCounter = 1;
+
+            var text = htmlDescription;
+
+            var matches = protectionRegex.Matches(text).Cast<Match>().OrderBy(m => m.Index).ToList();
+
+            foreach (var match in matches)
+            {
+                if (match.Index > lastIndex)
+                {
+                    
+                    sb.Append(text.Substring(lastIndex, match.Index - lastIndex));
+                }
+
+                var originalTerm = match.Value;
+                var placeholder = $"HT{placeholderCounter}";
+
+                if (!string.IsNullOrEmpty(originalTerm))
+                {
+                    protectedTerms[placeholder] = originalTerm;
+
+              
+                    sb.Append(placeholder);
+
+                    placeholderCounter++;
+                }
+
+                lastIndex = match.Index + match.Length;
+            }
+
+            if (lastIndex < text.Length)
+            {
+                sb.Append(text.Substring(lastIndex));
+            }
+
+   
+            var preparedText = sb.ToString();
+
+            return (preparedText, (translatedText) =>
+            {
+                var restoredText = translatedText;
+
+                foreach (var kvp in protectedTerms.OrderByDescending(x => x.Key.Length).ThenByDescending(x => x.Key))
+                {
+
+                    var pattern = Regex.Escape(kvp.Key);
+                    restoredText = Regex.Replace(restoredText, pattern, kvp.Value, RegexOptions.IgnoreCase);
+                }
+
+                restoredText = Regex.Replace(restoredText, @"(</\w+>)([a-zA-Z0-9À-ÿ])", "$1 $2");
+
+                return restoredText;
+            }
+            );
+        }
+
+        public void ClearTranslationCache()
+        {
+            
+            lock (translationCacheLock)
+            {
+                
+                translationCache.Cache = new Dictionary<string, List<CachedTranslationEntry>>();
+
+                
+                SaveTranslationCache();
+
+                logger.Info("[AutoDescriptionLocalizer] O cache de tradução foi zerado com sucesso.");
+            }
+        }
+
+        private bool ContainsHtmlTags(string text)
+        {
+         
+            return Regex.IsMatch(text, @"<[^>]+>", RegexOptions.Compiled);
+        }
 
         private async Task TranslateDescription(Game game)
         {
             if (currentlyTranslating.Contains(game.Id)) return;
+            if (!game.IsInstalled)
+            {
+                return;
+            }
             currentlyTranslating.Add(game.Id);
 
             var overallCts = new CancellationTokenSource(TimeSpan.FromSeconds(settingsViewModel.Settings.Timeout));
@@ -370,9 +457,11 @@ namespace AutoDescriptionLocalizer
 
             try
             {
+               
+                var originalHtmlDescription = game.Description ?? string.Empty;
                 var htmlDoc = new HtmlDocument();
-                htmlDoc.LoadHtml(game.Description);
-                var mainText = htmlDoc.DocumentNode.InnerText.Trim();
+                htmlDoc.LoadHtml(originalHtmlDescription);
+                var mainText = htmlDoc.DocumentNode.InnerText.Trim(); 
 
                 if (string.IsNullOrWhiteSpace(mainText))
                 {
@@ -389,7 +478,7 @@ namespace AutoDescriptionLocalizer
                 string finalTranslatedText = null;
                 bool translatedFromCache = false;
                 var cacheTargetLang = normalizedTargetLang;
-
+                bool forceRetranslation = false;
 
                 lock (translationCacheLock)
                 {
@@ -399,22 +488,36 @@ namespace AutoDescriptionLocalizer
 
                         if (existingEntry != null)
                         {
-                            // Cenário 1: A descrição do jogo agora é igual ao OriginalText em cache.
-                            // Isso significa que a tradução em cache é válida e deve ser usada.
-                            if (!string.IsNullOrEmpty(existingEntry.OriginalText) && mainText.Equals(existingEntry.OriginalText, StringComparison.Ordinal))
+ 
+                            if (originalHtmlDescription.Equals(existingEntry.OriginalText, StringComparison.Ordinal))
                             {
-                                finalTranslatedText = existingEntry.TranslatedText;
-                                translatedFromCache = true;
-                                logger.Info($"[AutoDescriptionLocalizer] Tradução de '{game.Name}' encontrada no cache. Descrição original idêntica. Usada.");
+                               
+                                if (ContainsHtmlTags(originalHtmlDescription))
+                                {
+                                   
+                                    if (!ContainsHtmlTags(existingEntry.TranslatedText))
+                                    {
+                                        logger.Info($"[AutoDescriptionLocalizer] Cache de '{game.Name}' considerado LEGADO (sem HTML). Forçando retradução.");
+                                        forceRetranslation = true;
+                                    }
+                                }
                             }
-                            // Cenário 2: O texto atual é igual à tradução em cache.
-                            // Não fazemos nada, o texto já está no idioma correto.
-                            else if (mainText.Equals(existingEntry.TranslatedText, StringComparison.Ordinal))
+
+                  
+                            if (!forceRetranslation && originalHtmlDescription.Equals(existingEntry.OriginalText, StringComparison.Ordinal))
+                            {
+                                finalTranslatedText = existingEntry.TranslatedText; 
+                                translatedFromCache = true;
+                                logger.Info($"[AutoDescriptionLocalizer] Tradução de '{game.Name}' encontrada no cache. Descrição original (HTML) idêntica. Usada.");
+                            }
+
+   
+                            else if (originalHtmlDescription.Equals(existingEntry.TranslatedText, StringComparison.Ordinal))
                             {
                                 logger.Info($"[AutoDescriptionLocalizer] Texto de '{game.Name}' já no idioma alvo e idêntico à tradução em cache. Nenhuma ação necessária.");
                                 currentlyTranslating.Remove(game.Id);
                                 playniteAPI.Notifications.Remove(TranslationProgressNotificationId);
-                                return; // Sai do método.
+                                return;
                             }
                         }
                     }
@@ -425,19 +528,8 @@ namespace AutoDescriptionLocalizer
                     var gameToUpdateFromCache = playniteAPI.Database.Games.Get(game.Id);
                     if (gameToUpdateFromCache != null)
                     {
-                        var textNodeFromCache = htmlDoc.DocumentNode.DescendantsAndSelf()
-                            .FirstOrDefault(n => n.NodeType == HtmlNodeType.Text && n.InnerText.Trim() == mainText);
-
-                        if (textNodeFromCache != null)
-                        {
-                            textNodeFromCache.InnerHtml = finalTranslatedText;
-                        }
-                        else
-                        {
-                            htmlDoc.DocumentNode.InnerHtml = finalTranslatedText;
-                        }
-
-                        gameToUpdateFromCache.Description = htmlDoc.DocumentNode.OuterHtml;
+                  
+                        gameToUpdateFromCache.Description = finalTranslatedText;
                         playniteAPI.Database.Games.Update(gameToUpdateFromCache);
                     }
                     string completionNotificationCache = isInterfaceInPortuguese ?
@@ -454,14 +546,13 @@ namespace AutoDescriptionLocalizer
                 bool needsTranslation = true;
                 string sampleText = RemoveTrademarkSymbols(mainText);
 
-                if (!string.IsNullOrEmpty(sampleText))
+                if (!forceRetranslation && !string.IsNullOrEmpty(sampleText))
                 {
                     var detectedLang = await DetectLanguageAsync(sampleText, overallCts.Token);
                     var targetPrimary = (normalizedTargetLang ?? "en").Split('-')[0];
                     if (!string.IsNullOrEmpty(detectedLang))
                     {
                         needsTranslation = !string.Equals(detectedLang, targetPrimary, StringComparison.OrdinalIgnoreCase);
-                        logger.Info($"[LANG_DETECT] Jogo '{game.Name}': detectado='{detectedLang}', alvo='{targetPrimary}', traduzir?={needsTranslation}.");
                     }
                     else
                     {
@@ -469,9 +560,9 @@ namespace AutoDescriptionLocalizer
                     }
                 }
 
-
                 if (!needsTranslation)
                 {
+                    logger.Info($"[AutoDescriptionLocalizer] O texto de '{game.Name}' (editado) foi detectado como idioma alvo. Sincronizando TranslatedText em cache para o texto editado, mantendo a referência OriginalText.");
                     lock (translationCacheLock)
                     {
                         if (!translationCache.Cache.ContainsKey(cacheTargetLang))
@@ -479,12 +570,14 @@ namespace AutoDescriptionLocalizer
                             translationCache.Cache[cacheTargetLang] = new List<CachedTranslationEntry>();
                         }
 
-                        var existingEntry = translationCache.Cache[cacheTargetLang].FirstOrDefault(e => string.Equals(e.Game, game.Name, StringComparison.OrdinalIgnoreCase));
+                        var existingEntry = translationCache.Cache[cacheTargetLang]
+                            .FirstOrDefault(e => string.Equals(e.Game, game.Name, StringComparison.OrdinalIgnoreCase));
 
                         if (existingEntry != null)
                         {
-      
-                            existingEntry.TranslatedText = mainText;
+
+                            existingEntry.TranslatedText = originalHtmlDescription;
+                            logger.Info($"[AutoDescriptionLocalizer] TranslatedText de '{game.Name}' atualizado no cache para refletir a edição manual.");
                         }
                         else
                         {
@@ -492,9 +585,10 @@ namespace AutoDescriptionLocalizer
                             translationCache.Cache[cacheTargetLang].Add(new CachedTranslationEntry
                             {
                                 Game = game.Name,
-                                OriginalText = string.Empty,
-                                TranslatedText = mainText
+                                OriginalText = string.Empty, 
+                                TranslatedText = originalHtmlDescription
                             });
+                            logger.Warn($"[AutoDescriptionLocalizer] Cache inexistente para '{game.Name}'. Criando nova entrada apenas com TranslatedText para evitar re-detecção.");
                         }
                         SaveTranslationCache();
                     }
@@ -502,8 +596,6 @@ namespace AutoDescriptionLocalizer
                     playniteAPI.Notifications.Remove(TranslationProgressNotificationId);
                     return;
                 }
-
-
                 string overlayText = isInterfaceInPortuguese ? "Traduzindo" : "Translating";
                 overlay = ShowProgress($"{overlayText}: {TruncateForOverlay(game.Name, 60)}");
 
@@ -515,6 +607,7 @@ namespace AutoDescriptionLocalizer
 
                 var translationTask = Task.Run(async () =>
                 {
+                    // ... (Lógica de proteção de títulos e regex, sem alterações) ...
 
                     var allTitlesForProtection = new HashSet<string>(
                         cachedGameTitles.Concat(customTitlesFromTxt.Select(t => t.Trim())),
@@ -548,12 +641,23 @@ namespace AutoDescriptionLocalizer
                     var masterPattern = patternParts.Any() ? string.Join("|", patternParts) : "(?!)";
                     var masterRegex = new Regex(masterPattern, RegexOptions.IgnoreCase);
 
-                    string textAfterExceptions = mainText;
+                    string textAfterExceptions = originalHtmlDescription;
+
+                    // 1. Extrai o texto limpo e separa o HTML com PLACEHOLDERS (HTx)
+                    var (textWithoutHtml, restoreHtmlFunction) = PrepareAndRestoreHtmlForTranslation(originalHtmlDescription);
+
+                    // Aplica exceções ao texto sem HTML
                     if (normalizedTargetLang == "pt-BR")
                     {
-                        textAfterExceptions = ApplyExceptions(mainText);
+                        textAfterExceptions = ApplyExceptions(textWithoutHtml);
                     }
-                    var (preparedText, restoreFunction) = PrepareAndRestoreTextForTranslation(textAfterExceptions, masterRegex);
+                    else
+                    {
+                        textAfterExceptions = textWithoutHtml;
+                    }
+
+                    // 2. Protege os TÍTULOS de jogos com PLACEHOLDERS (PHx) no texto limpo
+                    var (preparedText, restoreTitleFunction) = PrepareAndRestoreTextForTranslation(textAfterExceptions, masterRegex);
 
                     const int MAX_CHARS_PER_BLOCK = 2000;
                     var blocks = new List<string>();
@@ -594,7 +698,10 @@ namespace AutoDescriptionLocalizer
                         apiTranslatedText = FixCapitalization(apiTranslatedText);
                     }
 
-                    return restoreFunction(apiTranslatedText);
+                    var textRestoredTitles = restoreTitleFunction(apiTranslatedText);
+
+                    // 3. RESTAURA O HTML no TEXTO FINAL. ESTE É O TEXTO QUE VAI PARA O CACHE.
+                    return restoreHtmlFunction(textRestoredTitles);
                 }, overallCts.Token);
 
                 var timeoutTask = Task.Delay(TimeSpan.FromSeconds(20));
@@ -615,21 +722,24 @@ namespace AutoDescriptionLocalizer
 
                 finalTranslatedText = await translationTask;
 
-                
+  
                 lock (translationCacheLock)
                 {
                     if (!translationCache.Cache.ContainsKey(cacheTargetLang))
                     {
                         translationCache.Cache[cacheTargetLang] = new List<CachedTranslationEntry>();
                     }
+
+ 
                     translationCache.Cache[cacheTargetLang].RemoveAll(e =>
                         string.Equals(e.Game, game.Name, StringComparison.OrdinalIgnoreCase)
                     );
 
+               
                     translationCache.Cache[cacheTargetLang].Add(new CachedTranslationEntry
                     {
                         Game = game.Name,
-                        OriginalText = mainText, 
+                        OriginalText = originalHtmlDescription, 
                         TranslatedText = finalTranslatedText
                     });
                     SaveTranslationCache();
@@ -642,23 +752,11 @@ namespace AutoDescriptionLocalizer
                     return;
                 }
 
-                var originalHtmlDoc = new HtmlDocument();
-                originalHtmlDoc.LoadHtml(game.Description);
-                var textNode = originalHtmlDoc.DocumentNode.DescendantsAndSelf()
-                    .FirstOrDefault(n => n.NodeType == HtmlNodeType.Text && n.InnerText.Trim() == mainText);
+                var newDescription = finalTranslatedText;
 
-                if (textNode != null)
-                {
-                    textNode.InnerHtml = finalTranslatedText;
-                }
-                else
-                {
-                    originalHtmlDoc.DocumentNode.InnerHtml = finalTranslatedText;
-                }
-
-                var newDescription = originalHtmlDoc.DocumentNode.OuterHtml;
 
                 bool shouldUpdate = !settingsViewModel.Settings.AskBeforeOverwrite;
+
                 if (settingsViewModel.Settings.AskBeforeOverwrite)
                 {
                     string title = isInterfaceInPortuguese ? "Confirmar Tradução" : "Confirm Translation";

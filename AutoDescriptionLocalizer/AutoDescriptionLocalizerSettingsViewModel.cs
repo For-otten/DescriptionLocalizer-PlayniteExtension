@@ -28,7 +28,46 @@ namespace AutoDescriptionLocalizer
         public string TargetLanguageLabel => GetString("TargetLanguageLabel");
         public string TargetLanguageHelp => GetString("TargetLanguageHelp");
         public string AskBeforeOverwriteLabel => GetString("AskBeforeOverwriteLabel");
+        // Adicione esta propriedade abaixo de AskBeforeOverwriteLabel
+        public string ClearCacheButtonLabel => GetString("ClearCacheButtonLabel");
+        public string ClearCacheConfirmationMessage => GetString("ClearCacheConfirmationMessage");
+        public string ClearCacheSuccessMessage => GetString("ClearCacheSuccessMessage");
 
+        private RelayCommand clearCacheCommand;
+        public RelayCommand ClearCacheCommand
+        {
+            get
+            {
+                if (clearCacheCommand == null)
+                {
+                    clearCacheCommand = new RelayCommand(() =>
+                    {
+                        var playniteAPI = plugin.PlayniteApi;
+
+                        // 1. Confirmação
+                        var confirmResult = playniteAPI.Dialogs.ShowMessage(
+                            ClearCacheConfirmationMessage,
+                            WindowTitle,
+                            System.Windows.MessageBoxButton.YesNo,
+                            System.Windows.MessageBoxImage.Warning);
+
+                        if (confirmResult == System.Windows.MessageBoxResult.Yes)
+                        {
+                            // 2. Chamada ao método do plugin para limpar o cache
+                            plugin.ClearTranslationCache();
+
+                            // 3. Notificação de sucesso
+                            playniteAPI.Dialogs.ShowMessage(
+                                ClearCacheSuccessMessage,
+                                WindowTitle,
+                                System.Windows.MessageBoxButton.OK,
+                                System.Windows.MessageBoxImage.Information);
+                        }
+                    });
+                }
+                return clearCacheCommand;
+            }
+        }
         public AutoDescriptionLocalizerSettingsViewModel(AutoDescriptionLocalizerPlugin plugin, AutoDescriptionLocalizerSettings settings, string playniteLanguage)
         {
             this.plugin = plugin;
@@ -98,11 +137,31 @@ namespace AutoDescriptionLocalizer
         {
             translations = new Dictionary<string, string>
             {
-                { "WindowTitle", "Translation Settings" }, { "TargetLanguageLabel", "Target Translation Language" }, { "TargetLanguageHelp", "If 'Default' is selected, the extension will use your Playnite language." }, { "AskBeforeOverwriteLabel", "Always ask before overwriting the description" }, { "LangDefault", "Default (Playnite System Language)" }, { "LangEnglish", "English (en)" }, { "LangPortuguese", "Portuguese (pt-BR)" }, { "LangSpanish", "Spanish (es)" }, { "LangGerman", "German (de)" }, { "LangRussian", "French (fr)" }, { "LangChinese", "Russian (ru)" }
+                { "WindowTitle", "Translation Settings" },
+                { "TargetLanguageLabel", "Target Translation Language" },
+                { "TargetLanguageHelp", "If 'Default' is selected, the extension will use your Playnite language." },
+                { "AskBeforeOverwriteLabel", "Always ask before overwriting the description" },
+                { "ClearCacheButtonLabel", "Clear Translation Cache" },
+                { "ClearCacheConfirmationMessage", "Are you sure you want to delete all cached translations? This action cannot be undone." },
+                { "ClearCacheSuccessMessage", "Translation cache successfully cleared!" },
+                { "LangDefault", "Default (Playnite System Language)" },
+                { "LangEnglish", "English (en)" },
+                { "LangPortuguese", "Portuguese (pt-BR)" },
+                { "LangSpanish", "Spanish (es)" },
+                { "LangGerman", "German (de)" },
+                { "LangRussian", "French (fr)" },
+                { "LangChinese", "Russian (ru)" }
             };
             if (language?.StartsWith("pt", System.StringComparison.OrdinalIgnoreCase) == true)
             {
-                translations["WindowTitle"] = "Configurações de Tradução"; translations["TargetLanguageLabel"] = "Idioma de Destino da Tradução"; translations["TargetLanguageHelp"] = "Se 'Padrão' for selecionado, a extensão usará o idioma do seu Playnite."; translations["AskBeforeOverwriteLabel"] = "Sempre perguntar antes de sobrescrever a descrição"; translations["LangDefault"] = "Padrão (Idioma do Playnite)";
+                translations["WindowTitle"] = "Configurações de Tradução";
+                translations["TargetLanguageLabel"] = "Idioma de Destino da Tradução";
+                translations["TargetLanguageHelp"] = "Se 'Padrão' for selecionado, a extensão usará o idioma do seu Playnite.";
+                translations["AskBeforeOverwriteLabel"] = "Sempre perguntar antes de sobrescrever a descrição";
+                translations["ClearCacheButtonLabel"] = "Limpar Cache de Tradução";
+                translations["ClearCacheConfirmationMessage"] = "Tem certeza de que deseja deletar todas as traduções em cache? Esta ação não pode ser desfeita.";
+                translations["ClearCacheSuccessMessage"] = "Cache de tradução limpo com sucesso!";
+                translations["LangDefault"] = "Padrão (Idioma do Playnite)";
             }
         }
 
