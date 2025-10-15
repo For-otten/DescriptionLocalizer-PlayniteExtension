@@ -607,7 +607,7 @@ namespace AutoDescriptionLocalizer
 
                 var translationTask = Task.Run(async () =>
                 {
-                    // ... (Lógica de proteção de títulos e regex, sem alterações) ...
+   
 
                     var allTitlesForProtection = new HashSet<string>(
                         cachedGameTitles.Concat(customTitlesFromTxt.Select(t => t.Trim())),
@@ -643,10 +643,10 @@ namespace AutoDescriptionLocalizer
 
                     string textAfterExceptions = originalHtmlDescription;
 
-                    // 1. Extrai o texto limpo e separa o HTML com PLACEHOLDERS (HTx)
+              
                     var (textWithoutHtml, restoreHtmlFunction) = PrepareAndRestoreHtmlForTranslation(originalHtmlDescription);
 
-                    // Aplica exceções ao texto sem HTML
+                    
                     if (normalizedTargetLang == "pt-BR")
                     {
                         textAfterExceptions = ApplyExceptions(textWithoutHtml);
@@ -656,7 +656,7 @@ namespace AutoDescriptionLocalizer
                         textAfterExceptions = textWithoutHtml;
                     }
 
-                    // 2. Protege os TÍTULOS de jogos com PLACEHOLDERS (PHx) no texto limpo
+                   
                     var (preparedText, restoreTitleFunction) = PrepareAndRestoreTextForTranslation(textAfterExceptions, masterRegex);
 
                     const int MAX_CHARS_PER_BLOCK = 2000;
@@ -700,7 +700,7 @@ namespace AutoDescriptionLocalizer
 
                     var textRestoredTitles = restoreTitleFunction(apiTranslatedText);
 
-                    // 3. RESTAURA O HTML no TEXTO FINAL. ESTE É O TEXTO QUE VAI PARA O CACHE.
+            
                     return restoreHtmlFunction(textRestoredTitles);
                 }, overallCts.Token);
 
