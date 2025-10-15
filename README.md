@@ -78,7 +78,7 @@ Or directly from the [Playnite website](https://playnite.link/addons.html#FD25D2
 - If you plan to contribute, please configure your own LibreTranslate API or run a local server.  
 - In your development environment, replace the `BaseUrl` variable:
   <br><br>
-&ensp;_Se pretende contribuir, configure sua própria API do LibreTranslate ou rode um servidor local._  
+&ensp;_Para contribuir é necessário configurar uma API do LibreTranslate ou rodar em um servidor local._  
 &ensp;_No seu ambiente de desenvolvimento, substitua a variável `BaseUrl`:_
 
 ```csharp
