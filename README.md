@@ -17,11 +17,11 @@ _Sua ajuda contribui a sempre poder trazer novas melhorias. Valeu!_<br>
 # Auto Description Localizer - Playnite Extension
 Automatically translate your game descriptions with ease.
 Translations are powered by [LibreTranslate](https://libretranslate.com/), providing fast and reliable results in multiple languages.  
-**Supported Languages:** Brazilian Portuguese, Spanish, German, French, Russian, English  
+**Supported Languages:** Brazilian Portuguese, Spanish, German, French, Russian, English and Japanese
 
  &ensp;_Traduz suas descrições de jogos automaticamente._  
  &ensp;_As traduções são fornecidas pelo LibreTranslate, oferecendo resultados rápidos e confiáveis em vários idiomas._<br>
- &ensp;*Idiomas suportados:* Português, Espanhol, Alemão, Francês, Russo, Inglês
+ &ensp;*Idiomas suportados:* Português, Espanhol, Alemão, Francês, Russo, Inglês e Japonês
 
 ---
 
