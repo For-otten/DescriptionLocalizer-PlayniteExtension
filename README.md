@@ -61,15 +61,12 @@ Or directly from the [Playnite website](https://playnite.link/addons.html#FD25D2
     
 - It translates only if the description is not in your configured target language or the Playnite system language  
 - Track translation progress through Playnite notifications  
-- Supports up to **3 simultaneous translations**
-<br><br>
  - _A extensão detecta e traduz automaticamente descrições de jogos:_
      - _Sempre que um novo jogo é adicionado à sua biblioteca e possui descrição_
      - _Sempre que uma descrição é alterada_
     
   - _A tradução ocorre apenas se a descrição não estiver no idioma configurado ou no idioma do sistema do Playnite_
   - _Acompanhe o progresso das traduções através das notificações do Playnite_
-  - _Suporta até 3 traduções simultâneas_
 
 ---
 
