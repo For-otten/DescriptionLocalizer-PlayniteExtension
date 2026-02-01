@@ -1,6 +1,23 @@
 {
-  "side-scrolling": "Plataforma 2D",
-  "free-to-play": "gratuito",
-  "multijogador": "modo multiplayer",
-  "single-player": "modo singleplayer"
+  "pt-BR": {
+    "side-scrolling": "plataforma 2D",
+    "free-to-play": "gratuito para jogar",
+    "open world": "mundo aberto",
+    "next-gen": "nova geração",
+    "story-driven": "focado na narrativa",
+    "first-person": "primeira pessoa",
+    "third-person": "terceira pessoa",
+    "top-down": "visão superior",
+    "roguelike": "roguelike",
+    "roguelite": "roguelite",
+    "soundtrack": "trilha sonora",
+    "key features": "principais recursos",
+    "crafting": "fabricação de itens",
+    "skill tree": "árvore de habilidades",
+    "co-op": "cooperativo",
+    "indie": "indie",
+    "turn-based": "em turnos",
+    "early access": "acesso antecipado"
+  }
+  }
 }

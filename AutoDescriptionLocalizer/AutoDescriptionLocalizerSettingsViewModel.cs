@@ -87,6 +87,7 @@ namespace AutoDescriptionLocalizer
             AvailableLanguages.Add(new LanguageItem { Value = "de" });
             AvailableLanguages.Add(new LanguageItem { Value = "fr" });
             AvailableLanguages.Add(new LanguageItem { Value = "ru" });
+            AvailableLanguages.Add(new LanguageItem { Value = "ja" });
         }
 
         private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -136,22 +137,24 @@ namespace AutoDescriptionLocalizer
         private void LoadTranslations(string language)
         {
             translations = new Dictionary<string, string>
-            {
-                { "WindowTitle", "Translation Settings" },
-                { "TargetLanguageLabel", "Target Translation Language" },
-                { "TargetLanguageHelp", "If 'Default' is selected, the extension will use your Playnite language." },
-                { "AskBeforeOverwriteLabel", "Always ask before overwriting the description" },
-                { "ClearCacheButtonLabel", "Clear Translation Cache" },
-                { "ClearCacheConfirmationMessage", "Are you sure you want to delete all cached translations? This action cannot be undone." },
-                { "ClearCacheSuccessMessage", "Translation cache successfully cleared!" },
-                { "LangDefault", "Default (Playnite System Language)" },
-                { "LangEnglish", "English (en)" },
-                { "LangPortuguese", "Portuguese (pt-BR)" },
-                { "LangSpanish", "Spanish (es)" },
-                { "LangGerman", "German (de)" },
-                { "LangRussian", "French (fr)" },
-                { "LangChinese", "Russian (ru)" }
-            };
+    {
+        { "WindowTitle", "Translation Settings" },
+        { "TargetLanguageLabel", "Target Translation Language" },
+        { "TargetLanguageHelp", "If 'Default' is selected, the extension will use your Playnite language." },
+        { "AskBeforeOverwriteLabel", "Always ask before overwriting the description" },
+        { "ClearCacheButtonLabel", "Clear Translation Cache" },
+        { "ClearCacheConfirmationMessage", "Are you sure you want to delete all cached translations? This action cannot be undone." },
+        { "ClearCacheSuccessMessage", "Translation cache successfully cleared!" },
+        { "LangDefault", "Default (Playnite System Language)" },
+        { "LangEnglish", "English" },
+        { "LangPortuguese", "Português (pt-BR)" },
+        { "LangSpanish", "Español (es)" },
+        { "LangGerman", "Deutsch (de)" },
+        { "LangFrench", "Français (fr)" },
+        { "LangRussian", "Русский (ru)" },
+        { "LangJapanese", "日本語 (ja)" }
+    };
+
             if (language?.StartsWith("pt", System.StringComparison.OrdinalIgnoreCase) == true)
             {
                 translations["WindowTitle"] = "Configurações de Tradução";
@@ -161,15 +164,33 @@ namespace AutoDescriptionLocalizer
                 translations["ClearCacheButtonLabel"] = "Limpar Cache de Tradução";
                 translations["ClearCacheConfirmationMessage"] = "Tem certeza de que deseja deletar todas as traduções em cache? Esta ação não pode ser desfeita.";
                 translations["ClearCacheSuccessMessage"] = "Cache de tradução limpo com sucesso!";
+
                 translations["LangDefault"] = "Padrão (Idioma do Playnite)";
+                translations["LangEnglish"] = "English";
+                translations["LangPortuguese"] = "Português (pt-BR)";
+                translations["LangSpanish"] = "Español (es)";
+                translations["LangGerman"] = "Deutsch (de)";
+                translations["LangFrench"] = "Français (fr)";
+                translations["LangRussian"] = "Русский (ru)";
+                translations["LangJapanese"] = "日本語 (ja)";
             }
         }
-
         private string GetString(string key) => translations.TryGetValue(key, out var value) ? value : $"[{key}]";
 
         private void UpdateLanguageDisplayNames()
         {
-            AvailableLanguages[0].DisplayName = GetString("LangDefault"); AvailableLanguages[1].DisplayName = GetString("LangEnglish"); AvailableLanguages[2].DisplayName = GetString("LangPortuguese"); AvailableLanguages[3].DisplayName = GetString("LangSpanish"); AvailableLanguages[4].DisplayName = GetString("LangGerman"); AvailableLanguages[5].DisplayName = GetString("LangRussian"); AvailableLanguages[6].DisplayName = GetString("LangChinese");
+            // Garantir que os índices batem com a ordem do InitializeAvailableLanguages
+            if (AvailableLanguages.Count >= 8)
+            {
+                AvailableLanguages[0].DisplayName = GetString("LangDefault");
+                AvailableLanguages[1].DisplayName = GetString("LangEnglish");
+                AvailableLanguages[2].DisplayName = GetString("LangPortuguese");
+                AvailableLanguages[3].DisplayName = GetString("LangSpanish");
+                AvailableLanguages[4].DisplayName = GetString("LangGerman");
+                AvailableLanguages[5].DisplayName = GetString("LangFrench");
+                AvailableLanguages[6].DisplayName = GetString("LangRussian");
+                AvailableLanguages[7].DisplayName = GetString("LangJapanese");
+            }
         }
 
         // A lógica de Begin/End Edit gerencia o ciclo de vida do "ouvinte"
