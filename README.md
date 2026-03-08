@@ -27,9 +27,9 @@ Translations are powered by [LibreTranslate](https://libretranslate.com/), provi
 
 ## Questions, Suggestions, and Issues
 
-If you encounter a problem, have a suggestion, or want to report an issue, please open a [new issue](https://github.com/For-otten/DescriptionLocalizer-PlayniteExtension/issues).  
+If you encounter a problem please open a [new issue](https://github.com/For-otten/DescriptionLocalizer-PlayniteExtension/issues).  
 
- &ensp;_Se você encontrar um problema, tiver uma sugestão ou quiser reportar uma issue, abra uma new issue._
+ &ensp;_Se você encontrar um problema abra uma new issue._
 
 ---
 
